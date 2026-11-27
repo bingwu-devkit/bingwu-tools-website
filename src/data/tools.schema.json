@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Bingwu Tools Configuration",
+  "description": "个人高频工具聚合站配置文件 Schema",
+  "type": "object",
+  "required": ["categories", "tools"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema 路径"
+    },
+    "categories": {
+      "type": "array",
+      "minItems": 1,
+      "description": "左侧栏分类定义（按数组顺序展示）",
+      "items": {
+        "type": "object",
+        "required": ["id", "name"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$",
+            "description": "唯一分类标识，用于 URL 参数与工具关联"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "分类显示名称"
+          }
+        }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "minItems": 1,
+      "description": "工具列表",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "url", "description", "category"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$",
+            "description": "唯一工具标识（用于本地点击频次记录）"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "工具名称"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https?://",
+            "description": "主访问地址"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "description": "一句话简介"
+          },
+          "category": {
+            "type": "string",
+            "description": "所属分类 id（必须存在于 categories 中）"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true,
+            "description": "用于左侧多选筛选与卡片展示的标签"
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true,
+            "description": "检索别名、拼音或缩写（不在卡片展示，仅用于搜索命中）"
+          },
+          "icon": {
+            "type": "string",
+            "minLength": 1,
+            "description": "可选自定义图标路径（如 /icons/foo.svg 或完整 URL）；不填则自动获取站点 Favicon"
+          },
+          "links": {
+            "type": "array",
+            "maxItems": 2,
+            "description": "最多 2 个次级轻量入口（如文档、GitHub 仓库）",
+            "items": {
+              "type": "object",
+              "required": ["label", "url"],
+              "additionalProperties": false,
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["docs", "github", "other"],
+                  "default": "other",
+                  "description": "决定次级入口图标样式"
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "悬停提示文字"
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "pattern": "^https?://",
+                  "description": "次级入口地址"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

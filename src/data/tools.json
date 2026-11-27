@@ -1,0 +1,74 @@
+{
+  "$schema": "./tools.schema.json",
+  "categories": [
+    { "id": "dev", "name": "开发构建" },
+    { "id": "design", "name": "设计视觉" },
+    { "id": "productivity", "name": "文档效率" },
+    { "id": "utilities", "name": "在线工具" }
+  ],
+  "tools": [
+    {
+      "id": "feishu-docs",
+      "name": "飞书云文档",
+      "url": "https://www.feishu.cn/drive/home/",
+      "description": "高频多人在线文档、知识库与多维表格协作空间。",
+      "category": "productivity",
+      "tags": ["效率", "协作", "文档"],
+      "keywords": ["lark", "feishu", "文档", "多维表格", "飞书"]
+    },
+    {
+      "id": "excalidraw",
+      "name": "Excalidraw",
+      "url": "https://excalidraw.com",
+      "description": "极简手绘风格在线白板，快速绘制架构图、流程图与头脑风暴草图。",
+      "category": "design",
+      "tags": ["设计", "开源", "免费", "协作"],
+      "keywords": ["白板", "画图", "架构图", "流程图", "手绘"],
+      "links": [
+        { "type": "github", "label": "GitHub 仓库", "url": "https://github.com/excalidraw/excalidraw" }
+      ]
+    },
+    {
+      "id": "json-hero",
+      "name": "JSON Hero",
+      "url": "https://jsonhero.io/",
+      "description": "支持分栏浏览、树形视图、搜索与自动类型预览的现代开源 JSON 查看器。",
+      "category": "utilities",
+      "tags": ["免费", "开源", "效率"],
+      "keywords": ["json", "格式化", "查看器", "解析", "数据预览"],
+      "links": [
+        { "type": "github", "label": "GitHub 仓库", "url": "https://github.com/triggerdotdev/jsonhero-web" }
+      ]
+    },
+    {
+      "id": "tinypng",
+      "name": "TinyPNG",
+      "url": "https://tinypng.com/",
+      "description": "智能有损压缩 PNG、JPEG、WebP 与 AVIF 图片，大幅减小体积同时保持清晰度。",
+      "category": "utilities",
+      "tags": ["免费", "效率", "设计"],
+      "keywords": ["图片压缩", "png", "jpg", "webp", "avif", "compress", "熊猫"]
+    },
+    {
+      "id": "tldraw",
+      "name": "tldraw",
+      "url": "https://www.tldraw.com/",
+      "description": "轻量流畅的无限画布在线白板，适合快速草图绘制、界面构思与实时协作。",
+      "category": "design",
+      "tags": ["设计", "开源", "免费", "协作"],
+      "keywords": ["白板", "画图", "无限画布", "草图", "whiteboard", "canvas"],
+      "links": [
+        { "type": "github", "label": "GitHub 仓库", "url": "https://github.com/tldraw/tldraw" }
+      ]
+    },
+    {
+      "id": "caniuse",
+      "name": "Can I use",
+      "url": "https://caniuse.com/",
+      "description": "查询现代 CSS、HTML 与 JavaScript 特性在各主流浏览器中的兼容性支持。",
+      "category": "dev",
+      "tags": ["免费", "开源", "效率"],
+      "keywords": ["兼容", "浏览器", "browser", "css", "html", "js", "support"]
+    }
+  ]
+}

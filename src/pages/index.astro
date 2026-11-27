@@ -1,11 +1,402 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import ToolCard from '../components/ToolCard.astro';
+import { categories, tools, allTags } from '../lib/tools';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const clientPayload = {
+  categories,
+  tools: tools.map((t) => ({
+    id: t.id,
+    index: t.index,
+    name: t.name,
+    url: t.url,
+    description: t.description,
+    category: t.category,
+    tags: t.tags,
+    keywords: t.keywords,
+    hostname: t.hostname,
+  })),
+  tags: allTags.map((t) => t.name),
+};
 ---
 
 <Layout>
-	<Welcome />
+  <!-- Top Sticky Header -->
+  <header class="sticky top-0 z-30 h-14 border-b border-[var(--border)] bg-[var(--bg-elevated)] backdrop-blur-md">
+    <div class="mx-auto flex h-full max-w-[1280px] items-center justify-between gap-3 px-4 sm:px-6">
+      <!-- Brand -->
+      <button
+        type="button"
+        id="brand-reset-btn"
+        class="flex shrink-0 cursor-pointer items-center gap-2.5 text-left focus:outline-none"
+        title="回到全部工具"
+      >
+        <span class="flex h-6 w-6 items-center justify-center rounded-[5px] bg-[var(--accent-bg)] text-[var(--accent-fg)]">
+          <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor" />
+            <rect x="9" y="2" width="5" height="5" rx="1" fill="currentColor" fill-opacity="0.4" />
+            <rect x="2" y="9" width="5" height="5" rx="1" fill="currentColor" fill-opacity="0.4" />
+            <rect x="9" y="9" width="5" height="5" rx="1" fill="currentColor" />
+          </svg>
+        </span>
+        <span class="text-[14px] font-semibold tracking-[-0.02em] text-[var(--text-primary)]">
+          Bingwu Tools
+        </span>
+      </button>
+
+      <!-- Search Input -->
+      <div class="relative flex-1 max-w-[460px]">
+        <svg
+          class="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-[var(--text-muted)]"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <circle cx="7" cy="7" r="4.75" />
+          <path d="M10.5 10.5L14 14" stroke-linecap="round" />
+        </svg>
+
+        <input
+          id="search-input"
+          type="text"
+          inputmode="search"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="搜索工具、描述、标签或别名..."
+          aria-label="搜索工具"
+          class="h-9 w-full rounded-md border border-[var(--border)] bg-[var(--bg-surface)] pr-16 pl-9 text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] transition-colors focus:border-[var(--border-hover)] focus:outline-none"
+        />
+
+        <div class="absolute top-1/2 right-2 flex -translate-y-1/2 items-center gap-1">
+          <button
+            type="button"
+            id="search-clear-btn"
+            aria-label="清空搜索"
+            class="hidden h-5 w-5 cursor-pointer items-center justify-center rounded text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]"
+          >
+            <svg class="h-3 w-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75">
+              <path d="M4 4l8 8M12 4l-8 8" stroke-linecap="round" />
+            </svg>
+          </button>
+          <kbd
+            id="search-kbd-hint"
+            class="pointer-events-none hidden sm:inline-flex h-5 items-center rounded border border-[var(--border)] bg-[var(--bg-page)] px-1.5 text-[11px] font-medium text-[var(--text-muted)]"
+          >
+            /
+          </kbd>
+        </div>
+      </div>
+
+      <!-- Theme Toggle -->
+      <button
+        type="button"
+        id="theme-toggle-btn"
+        aria-label="切换明暗主题"
+        title="切换明暗主题"
+        class="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md border border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-secondary)] transition-colors hover:border-[var(--border-hover)] hover:text-[var(--text-primary)]"
+      >
+        <!-- Sun (visible in dark mode) -->
+        <svg class="hidden h-4 w-4 dark:block" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="8" cy="8" r="3" />
+          <path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1.06 1.06M11.54 11.54l1.06 1.06M12.6 3.4l-1.06 1.06M4.46 11.54L3.4 12.6" stroke-linecap="round" />
+        </svg>
+        <!-- Moon (visible in light mode) -->
+        <svg class="block h-4 w-4 dark:hidden" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M13.2 9.8A5.5 5.5 0 016.2 2.8a5.5 5.5 0 107 7z" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Category Strip + Tag Drawer Trigger -->
+  <div class="sticky top-14 z-20 border-b border-[var(--border)] bg-[var(--bg-elevated)] backdrop-blur-md md:hidden">
+    <div class="flex items-center gap-2 px-4 py-2.5">
+      <div class="no-scrollbar flex flex-1 items-center gap-1.5 overflow-x-auto">
+        <button
+          type="button"
+          data-mobile-cat="all"
+          class="shrink-0 cursor-pointer rounded-md border border-[var(--accent-bg)] bg-[var(--accent-bg)] px-2.5 py-1 text-[12px] font-medium text-[var(--accent-fg)] transition-colors"
+        >
+          全部
+        </button>
+        {categories.map((cat) => (
+          <button
+            type="button"
+            data-mobile-cat={cat.id}
+            class="shrink-0 cursor-pointer rounded-md border border-[var(--border)] bg-[var(--bg-surface)] px-2.5 py-1 text-[12px] font-medium text-[var(--text-secondary)] transition-colors"
+          >
+            {cat.name}
+          </button>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        id="mobile-drawer-open"
+        class="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--bg-surface)] px-2.5 py-1 text-[12px] font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--border-hover)]"
+      >
+        <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M2 3.5h12M4.5 8h7M6.75 12.5h2.5" stroke-linecap="round" />
+        </svg>
+        <span>筛选</span>
+        <span
+          id="mobile-tag-badge"
+          class="hidden h-4 min-w-4 items-center justify-center rounded-full bg-[var(--accent-bg)] px-1 text-[10px] font-semibold text-[var(--accent-fg)]"
+        >
+          0
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Workspace -->
+  <main class="mx-auto flex w-full max-w-[1280px] flex-1 gap-8 px-4 py-6 sm:px-6">
+    <!-- Desktop Left Sticky Sidebar -->
+    <aside class="hidden w-[224px] shrink-0 md:block" aria-label="分类与标签筛选">
+      <div class="sticky top-[80px] max-h-[calc(100dvh-104px)] space-y-6 overflow-y-auto pr-1">
+        <!-- Categories (Single-select) -->
+        <section>
+          <div class="mb-2 flex items-center justify-between px-2">
+            <h2 class="text-[11px] font-medium tracking-wider text-[var(--text-muted)] uppercase">
+              分类
+            </h2>
+          </div>
+
+          <nav class="space-y-0.5">
+            <button
+              type="button"
+              data-category-btn="all"
+              aria-pressed="true"
+              class="flex w-full cursor-pointer items-center justify-between rounded-md bg-[var(--bg-subtle)] px-2.5 py-1.5 text-left text-[13px] font-medium text-[var(--text-primary)] transition-colors"
+            >
+              <span class="truncate">全部工具</span>
+              <span data-category-count="all" class="font-mono text-[11px] text-[var(--text-muted)]">
+                {tools.length}
+              </span>
+            </button>
+
+            {categories.map((cat) => {
+              const count = tools.filter((t) => t.category === cat.id).length;
+              return (
+                <button
+                  type="button"
+                  data-category-btn={cat.id}
+                  aria-pressed="false"
+                  class="flex w-full cursor-pointer items-center justify-between rounded-md px-2.5 py-1.5 text-left text-[13px] text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-subtle)]/70 hover:text-[var(--text-primary)]"
+                >
+                  <span class="truncate">{cat.name}</span>
+                  <span data-category-count={cat.id} class="font-mono text-[11px] text-[var(--text-muted)]">
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+        </section>
+
+        <div class="border-t border-[var(--border)]"></div>
+
+        <!-- Tags (Multi-select AND) -->
+        <section>
+          <div class="mb-2 flex items-center justify-between px-2">
+            <h2 class="text-[11px] font-medium tracking-wider text-[var(--text-muted)] uppercase">
+              标签筛选
+            </h2>
+            <button
+              type="button"
+              id="sidebar-clear-btn"
+              class="hidden cursor-pointer text-[11px] text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
+            >
+              清除全部
+            </button>
+          </div>
+
+          <div class="space-y-0.5">
+            {allTags.map((tag) => (
+              <label class="flex cursor-pointer items-center justify-between rounded-md px-2.5 py-1.5 text-[13px] text-[var(--text-secondary)] transition-colors select-none hover:bg-[var(--bg-subtle)]/70 hover:text-[var(--text-primary)]">
+                <span class="flex min-w-0 items-center gap-2.5">
+                  <input
+                    type="checkbox"
+                    value={tag.name}
+                    data-tag-checkbox={tag.name}
+                    class="peer sr-only"
+                  />
+                  <span
+                    class="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[3px] border border-[var(--border-strong)] bg-[var(--bg-surface)] text-[var(--accent-fg)] transition-colors peer-checked:border-[var(--accent-bg)] peer-checked:bg-[var(--accent-bg)] peer-checked:[&_svg]:opacity-100 peer-focus-visible:ring-1 peer-focus-visible:ring-[var(--ring-focus)]"
+                    aria-hidden="true"
+                  >
+                    <svg class="h-2.5 w-2.5 opacity-0 transition-opacity" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M2.5 6.2L5 8.7L9.5 3.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </span>
+                  <span class="truncate">{tag.name}</span>
+                </span>
+                <span data-tag-count={tag.name} class="font-mono text-[11px] text-[var(--text-muted)]">
+                  {tag.count}
+                </span>
+              </label>
+            ))}
+          </div>
+        </section>
+      </div>
+    </aside>
+
+    <!-- Right Content Area -->
+    <section class="flex min-w-0 flex-1 flex-col">
+      <!-- Toolbar -->
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <p class="text-[13px] text-[var(--text-secondary)]">
+            共 <span id="result-count" class="font-mono font-medium text-[var(--text-primary)]">{tools.length}</span> 个工具
+          </p>
+          <div id="active-filters" class="flex flex-wrap items-center gap-1.5"></div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Sort Switch -->
+          <div
+            class="inline-flex items-center rounded-md border border-[var(--border)] bg-[var(--bg-surface)] p-0.5"
+            role="group"
+            aria-label="排序方式"
+          >
+            <button
+              type="button"
+              data-sort-btn="freq"
+              aria-pressed="true"
+              class="cursor-pointer rounded-[4px] bg-[var(--bg-subtle)] px-2.5 py-1 text-[12px] font-medium text-[var(--text-primary)] transition-colors"
+            >
+              常用优先
+            </button>
+            <button
+              type="button"
+              data-sort-btn="default"
+              aria-pressed="false"
+              class="cursor-pointer rounded-[4px] px-2.5 py-1 text-[12px] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+            >
+              默认顺序
+            </button>
+          </div>
+
+          <!-- Two-step Inline Reset Clicks -->
+          <button
+            type="button"
+            id="reset-clicks-btn"
+            title="清空本地点击频次记录"
+            class="hidden h-[30px] cursor-pointer items-center rounded-md border border-[var(--border)] bg-[var(--bg-surface)] px-2.5 text-[12px] text-[var(--text-secondary)] transition-colors hover:border-[var(--border-hover)] hover:text-[var(--text-primary)]"
+          >
+            重置记录
+          </button>
+        </div>
+      </div>
+
+      <!-- Tool Cards Grid -->
+      <div id="tools-grid" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {tools.map((tool) => (
+          <ToolCard tool={tool} />
+        ))}
+      </div>
+
+      <!-- Empty State -->
+      <div
+        id="empty-state"
+        class="hidden flex-col items-center justify-center rounded-lg border border-dashed border-[var(--border-strong)] bg-[var(--bg-surface)] px-6 py-16 text-center"
+      >
+        <p class="text-[14px] font-medium text-[var(--text-primary)]">没有找到匹配的工具</p>
+        <p class="mt-1 text-[13px] text-[var(--text-secondary)]">
+          尝试更换搜索关键词，或放宽左侧的分类与标签条件。
+        </p>
+        <button
+          type="button"
+          id="empty-clear-btn"
+          class="mt-4 cursor-pointer rounded-md border border-[var(--border-strong)] bg-[var(--bg-page)] px-3 py-1.5 text-[12px] font-medium text-[var(--text-primary)] transition-colors hover:border-[var(--border-hover)] hover:bg-[var(--bg-subtle)]"
+        >
+          清除全部筛选
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Minimal Footer -->
+  <footer class="mt-auto border-t border-[var(--border)]">
+    <div class="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-2 px-4 py-3.5 text-[12px] text-[var(--text-muted)] sm:px-6">
+      <span>共收录 {tools.length} 个工具 · 点击频次记忆仅保存在当前浏览器</span>
+      <span class="hidden items-center gap-1.5 sm:inline-flex">
+        <kbd class="rounded border border-[var(--border)] bg-[var(--bg-surface)] px-1.5 py-0.5 text-[11px]">/</kbd>
+        <span>或</span>
+        <kbd class="rounded border border-[var(--border)] bg-[var(--bg-surface)] px-1.5 py-0.5 text-[11px]">⌘K</kbd>
+        <span>搜索</span>
+        <span class="mx-1 text-[var(--border-strong)]">·</span>
+        <kbd class="rounded border border-[var(--border)] bg-[var(--bg-surface)] px-1.5 py-0.5 text-[11px]">↑↓←→</kbd>
+        <span>选择</span>
+        <span class="mx-1 text-[var(--border-strong)]">·</span>
+        <kbd class="rounded border border-[var(--border)] bg-[var(--bg-surface)] px-1.5 py-0.5 text-[11px]">Enter</kbd>
+        <span>打开</span>
+      </span>
+    </div>
+  </footer>
+
+  <!-- Mobile Tag Filter Drawer -->
+  <div id="mobile-drawer" class="fixed inset-0 z-50 hidden md:hidden" aria-hidden="true">
+    <div id="mobile-drawer-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-[1px]"></div>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="按标签筛选"
+      class="absolute inset-x-0 bottom-0 flex max-h-[75dvh] flex-col rounded-t-xl border-t border-[var(--border)] bg-[var(--bg-surface)]"
+    >
+      <div class="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
+        <span class="text-[13px] font-medium text-[var(--text-primary)]">按标签筛选（多选交集）</span>
+        <button
+          type="button"
+          id="mobile-drawer-close"
+          aria-label="关闭筛选抽屉"
+          class="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]"
+        >
+          <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 4l8 8M12 4l-8 8" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="overflow-y-auto p-4">
+        <div class="flex flex-wrap gap-2">
+          {allTags.map((tag) => (
+            <button
+              type="button"
+              data-mobile-tag={tag.name}
+              aria-pressed="false"
+              class="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--bg-page)] px-3 py-1.5 text-[12px] text-[var(--text-secondary)] transition-colors"
+            >
+              <span>{tag.name}</span>
+              <span data-mobile-tag-count={tag.name} class="font-mono text-[11px] opacity-70">
+                {tag.count}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between gap-3 border-t border-[var(--border)] px-4 py-3">
+        <button
+          type="button"
+          id="mobile-drawer-clear"
+          class="cursor-pointer rounded-md border border-[var(--border)] px-3 py-1.5 text-[12px] text-[var(--text-secondary)] hover:border-[var(--border-hover)] hover:text-[var(--text-primary)]"
+        >
+          清除标签
+        </button>
+        <button
+          type="button"
+          id="mobile-drawer-done"
+          class="cursor-pointer rounded-md bg-[var(--accent-bg)] px-4 py-1.5 text-[12px] font-medium text-[var(--accent-fg)]"
+        >
+          完成
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script id="tools-data" type="application/json" set:html={JSON.stringify(clientPayload)} />
+  <script src="../scripts/app.ts"></script>
 </Layout>

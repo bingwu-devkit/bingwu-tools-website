@@ -1,0 +1,126 @@
+---
+import type { EnrichedTool } from '../lib/tools';
+
+interface Props {
+  tool: EnrichedTool;
+}
+
+const { tool } = Astro.props;
+const visibleTags = tool.tags.slice(0, 3);
+---
+
+<article
+  class="tool-card group relative flex flex-col justify-between rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] p-4 transition-colors duration-150 hover:border-[var(--border-hover)] hover:bg-[var(--bg-surface-hover)]"
+  data-tool-card={tool.id}
+  data-active="false"
+>
+  <div>
+    <div class="flex items-start justify-between gap-3">
+      <div class="flex min-w-0 items-center gap-3">
+        <div
+          data-tool-icon-box
+          class="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[var(--border)] bg-[var(--bg-icon-chip)]"
+        >
+          <img
+            src={tool.faviconUrl}
+            alt=""
+            width="20"
+            height="20"
+            loading="lazy"
+            decoding="async"
+            referrerpolicy="no-referrer"
+            data-tool-icon
+            class="h-5 w-5 object-contain"
+          />
+          <span
+            data-tool-fallback
+            class="hidden text-xs font-semibold text-[#171717] select-none"
+            aria-hidden="true"
+          >
+            {tool.initial}
+          </span>
+        </div>
+
+        <div class="min-w-0">
+          <h2 class="truncate text-[14px] leading-snug font-medium tracking-[-0.01em] text-[var(--text-primary)]">
+            <a
+              href={tool.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-tool-main-link={tool.id}
+              class="after:absolute after:inset-0 after:z-0 focus:outline-none"
+            >
+              {tool.name}
+            </a>
+          </h2>
+          <p class="truncate font-mono text-[11px] leading-tight text-[var(--text-muted)]">
+            {tool.hostname}
+          </p>
+        </div>
+      </div>
+
+      <span
+        class="mt-0.5 shrink-0 text-[var(--text-muted)] opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[var(--text-primary)] group-hover:opacity-100 group-data-[active=true]:opacity-100"
+        aria-hidden="true"
+      >
+        <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M4.5 11.5L11.5 4.5M11.5 4.5H6M11.5 4.5V10" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+    </div>
+
+    <p class="mt-3 line-clamp-2 text-[13px] leading-[1.55] text-[var(--text-secondary)]">
+      {tool.description}
+    </p>
+  </div>
+
+  <div class="mt-4 flex items-center justify-between gap-2 border-t border-[var(--border)]/70 pt-3">
+    <div class="flex min-w-0 flex-wrap items-center gap-1.5">
+      {visibleTags.length > 0 ? (
+        visibleTags.map((tag) => (
+          <span class="inline-flex items-center rounded border border-[var(--border)] bg-[var(--bg-page)] px-1.5 py-0.5 text-[11px] leading-none text-[var(--text-secondary)]">
+            {tag}
+          </span>
+        ))
+      ) : (
+        <span class="inline-flex items-center rounded border border-[var(--border)] bg-[var(--bg-page)] px-1.5 py-0.5 text-[11px] leading-none text-[var(--text-muted)]">
+          {tool.categoryName}
+        </span>
+      )}
+    </div>
+
+    {tool.links.length > 0 && (
+      <div class="relative z-10 flex shrink-0 items-center gap-1">
+        {tool.links.map((link) => (
+          <a
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={link.label}
+            aria-label={`${tool.name} - ${link.label}`}
+            data-tool-secondary-link
+            class="inline-flex h-6 w-6 items-center justify-center rounded border border-transparent text-[var(--text-muted)] transition-colors hover:border-[var(--border-strong)] hover:bg-[var(--bg-page)] hover:text-[var(--text-primary)]"
+          >
+            {link.type === 'github' ? (
+              <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path
+                  fill-rule="evenodd"
+                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+                />
+              </svg>
+            ) : link.type === 'docs' ? (
+              <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+                <path d="M3 2.75A1.25 1.25 0 014.25 1.5h5.19c.33 0 .65.13.88.37l2.31 2.31c.24.23.37.55.37.88v8.19a1.25 1.25 0 01-1.25 1.25h-7.5A1.25 1.25 0 013 13.25V2.75z" />
+                <path d="M5.5 7h5M5.5 9.75h5M5.5 12h3" stroke-linecap="round" />
+              </svg>
+            ) : (
+              <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+                <path d="M6.5 9.5l3-3M5.5 7L4 8.5a2.12 2.12 0 003 3L8.5 10M10.5 9L12 7.5a2.12 2.12 0 00-3-3L7.5 6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            )}
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</article>
