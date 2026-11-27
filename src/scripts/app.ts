@@ -502,12 +502,15 @@ function initApp() {
       resetClicksBtn.classList.remove(
         'border-[var(--accent-bg)]',
         'bg-[var(--accent-bg)]',
-        'text-[var(--accent-fg)]'
+        'text-[var(--accent-fg)]',
+        'hover:opacity-90'
       );
       resetClicksBtn.classList.add(
         'border-[var(--border)]',
         'bg-[var(--bg-surface)]',
-        'text-[var(--text-secondary)]'
+        'text-[var(--text-secondary)]',
+        'hover:border-[var(--border-hover)]',
+        'hover:text-[var(--text-primary)]'
       );
     }
   }
@@ -634,12 +637,15 @@ function initApp() {
         resetClicksBtn.classList.remove(
           'border-[var(--border)]',
           'bg-[var(--bg-surface)]',
-          'text-[var(--text-secondary)]'
+          'text-[var(--text-secondary)]',
+          'hover:border-[var(--border-hover)]',
+          'hover:text-[var(--text-primary)]'
         );
         resetClicksBtn.classList.add(
           'border-[var(--accent-bg)]',
           'bg-[var(--accent-bg)]',
-          'text-[var(--accent-fg)]'
+          'text-[var(--accent-fg)]',
+          'hover:opacity-90'
         );
         resetConfirmTimer = window.setTimeout(() => {
           clearResetConfirm();
